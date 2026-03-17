@@ -3,8 +3,11 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import { PageShell } from '../components/templates/PageShell';
 import { ActionCard } from '../components/molecules/ActionCard';
+import { useNavigate } from 'react-router-dom';
 
 export function HomePage() {
+  const navigate = useNavigate();
+
   return (
     <PageShell>
         <Box sx={{ textAlign: 'center', mb: 6 }}>
@@ -28,6 +31,7 @@ export function HomePage() {
               title="Cadastro e gestão de pacientes"
               description="Mantenha os dados de contato sempre atualizados e tenha uma visão rápida dos pacientes da clínica."
               actionLabel="Ir para pacientes"
+              onClick={() => navigate('/patients')}
             />
           </Grid>
 
@@ -38,7 +42,7 @@ export function HomePage() {
               title="Fila e status dos atendimentos"
               description="Registre solicitações, acompanhe o status (aguardando, em atendimento, finalizado) e mantenha o fluxo sob controle."
               actionLabel="Ir para atendimentos"
-              actionVariant="outlined"
+              onClick={() => navigate('/appointments')}
             />
           </Grid>
         </Grid>

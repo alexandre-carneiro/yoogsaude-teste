@@ -61,7 +61,7 @@ describe('Appointments API', () => {
       .send({ status: AtendimentoStatus.FINALIZADO });
 
     expect(invalidTransition.status).toBe(400);
-    expect(invalidTransition.body.message).toContain('Invalid status transition');
+    expect(invalidTransition.body.message).toContain('Transição de status inválida');
   });
 
   it('should perform the full status transition flow until FINALIZADO', async () => {
