@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM node:22
 
 WORKDIR /app
 
@@ -9,6 +9,7 @@ RUN npm install
 COPY tsconfig.json .eslintrc.cjs jest.config.cjs ./
 COPY src ./src
 COPY tests ./tests
+COPY prisma ./prisma
 
 RUN npm run build
 

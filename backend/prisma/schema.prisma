@@ -1,5 +1,3 @@
-// Configuração inicial do Prisma; modelos serão adicionados depois
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,5 +5,51 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum AtendimentoStatus {
+  AGUARDANDO
+  EM_ATENDIMENTO
+  FINALIZADO
+}
+
+model Paciente {
+  id           String        @id @default(uuid())
+  name         String
+  phone        String
+  email        String?       @unique
+  birthDate    DateTime?
+  notes        String?
+
+  atendimentos Atendimento[]
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([name])
+  @@index([phone])
+}
+
+model Atendimento {
+  id            String            @id @default(uuid())
+  pacienteId    String
+  paciente      Paciente          @relation(fields: [pacienteId], references: [id], onDelete: Restrict)
+
+  title         String
+  description   String
+
+  status        AtendimentoStatus @default(AGUARDANDO)
+
+  scheduledFor  DateTime?
+  startedAt     DateTime?
+  finishedAt    DateTime?
+  priority      Int?              @default(0)
+
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([pacienteId])
+  @@index([status])
+  @@index([scheduledFor])
 }
 
