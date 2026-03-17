@@ -32,28 +32,32 @@ export async function createAppointment(req: Request, res: Response) {
   const parseResult = createAppointmentSchema.safeParse(req.body);
 
   if (!parseResult.success) {
-    return res.status(400).json({ message: 'Invalid appointment data', issues: parseResult.error.issues });
+    return res.status(400).json({ message: 'Dados inválidos do atendimento', issues: parseResult.error.issues });
   }
 
   const { patientId, title, description, scheduledFor, priority } = parseResult.data;
 
   const patient = await prisma.paciente.findUnique({ where: { id: patientId } });
   if (!patient) {
-    return res.status(404).json({ message: 'Patient not found' });
+    return res.status(404).json({ message: 'Paciente não encontrado' });
   }
 
-  const appointment = await prisma.atendimento.create({
-    data: {
-      pacienteId: patientId,
-      title,
-      description,
-      status: AtendimentoStatus.AGUARDANDO,
-      scheduledFor: scheduledFor ? new Date(scheduledFor) : undefined,
-      priority: priority ?? 0
-    }
-  });
+  try {
+    const appointment = await prisma.atendimento.create({
+      data: {
+        pacienteId: patientId,
+        title,
+        description,
+        status: AtendimentoStatus.AGUARDANDO,
+        scheduledFor: scheduledFor ? new Date(scheduledFor) : undefined,
+        priority: priority ?? 0
+      }
+    });
 
-  return res.status(201).json(appointment);
+    return res.status(201).json(appointment);
+  } catch (err) {
+    return res.status(500).json({ message: 'Erro inesperado ao criar atendimento' });
+  }
 }
 
 export async function listAppointments(req: Request, res: Response) {
@@ -73,46 +77,54 @@ export async function listAppointments(req: Request, res: Response) {
   const sizeNumber = Number(pageSize) || 10;
   const skip = (pageNumber - 1) * sizeNumber;
 
-  const [items, total] = await Promise.all([
-    prisma.atendimento.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      skip,
-      take: sizeNumber,
-      include: {
-        paciente: {
-          select: { id: true, name: true, phone: true }
+  try {
+    const [items, total] = await Promise.all([
+      prisma.atendimento.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: sizeNumber,
+        include: {
+          paciente: {
+            select: { id: true, name: true, phone: true }
+          }
         }
-      }
-    }),
-    prisma.atendimento.count({ where })
-  ]);
+      }),
+      prisma.atendimento.count({ where })
+    ]);
 
-  return res.status(200).json({
-    items,
-    total,
-    page: pageNumber,
-    pageSize: sizeNumber
-  });
+    return res.status(200).json({
+      items,
+      total,
+      page: pageNumber,
+      pageSize: sizeNumber
+    });
+  } catch (err) {
+    return res.status(500).json({ message: 'Erro inesperado ao listar atendimentos' });
+  }
 }
 
 export async function getAppointmentById(req: Request, res: Response) {
   const { id } = req.params;
 
-  const appointment = await prisma.atendimento.findUnique({
-    where: { id },
-    include: {
-      paciente: {
-        select: { id: true, name: true, phone: true }
+  try {
+    const appointment = await prisma.atendimento.findUnique({
+      where: { id },
+      include: {
+        paciente: {
+          select: { id: true, name: true, phone: true }
+        }
       }
+    });
+
+    if (!appointment) {
+      return res.status(404).json({ message: 'Atendimento não encontrado' });
     }
-  });
 
-  if (!appointment) {
-    return res.status(404).json({ message: 'Appointment not found' });
+    return res.status(200).json(appointment);
+  } catch (err) {
+    return res.status(500).json({ message: 'Erro inesperado ao buscar atendimento' });
   }
-
-  return res.status(200).json(appointment);
 }
 
 export async function updateAppointment(req: Request, res: Response) {
@@ -120,28 +132,32 @@ export async function updateAppointment(req: Request, res: Response) {
 
   const existing = await prisma.atendimento.findUnique({ where: { id } });
   if (!existing) {
-    return res.status(404).json({ message: 'Appointment not found' });
+    return res.status(404).json({ message: 'Atendimento não encontrado' });
   }
 
   const parseResult = updateAppointmentSchema.safeParse(req.body);
 
   if (!parseResult.success) {
-    return res.status(400).json({ message: 'Invalid appointment data', issues: parseResult.error.issues });
+    return res.status(400).json({ message: 'Dados inválidos do atendimento', issues: parseResult.error.issues });
   }
 
   const { title, description, scheduledFor, priority } = parseResult.data;
 
-  const updated = await prisma.atendimento.update({
-    where: { id },
-    data: {
-      title,
-      description,
-      scheduledFor: scheduledFor ? new Date(scheduledFor) : undefined,
-      priority: priority ?? existing.priority
-    }
-  });
+  try {
+    const updated = await prisma.atendimento.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        scheduledFor: scheduledFor ? new Date(scheduledFor) : undefined,
+        priority: priority ?? existing.priority
+      }
+    });
 
-  return res.status(200).json(updated);
+    return res.status(200).json(updated);
+  } catch (err) {
+    return res.status(500).json({ message: 'Erro inesperado ao atualizar atendimento' });
+  }
 }
 
 export async function deleteAppointment(req: Request, res: Response) {
@@ -149,14 +165,18 @@ export async function deleteAppointment(req: Request, res: Response) {
 
   const existing = await prisma.atendimento.findUnique({ where: { id } });
   if (!existing) {
-    return res.status(404).json({ message: 'Appointment not found' });
+    return res.status(404).json({ message: 'Atendimento não encontrado' });
   }
 
-  await prisma.atendimento.delete({ where: { id } });
+  try {
+    await prisma.atendimento.delete({ where: { id } });
 
-  return res.status(200).json({
-    message: 'Appointment deleted successfully'
-  });
+    return res.status(200).json({
+      message: 'Atendimento excluído com sucesso'
+    });
+  } catch (err) {
+    return res.status(500).json({ message: 'Erro inesperado ao excluir atendimento' });
+  }
 }
 
 export async function updateAppointmentStatus(req: Request, res: Response) {
@@ -164,13 +184,13 @@ export async function updateAppointmentStatus(req: Request, res: Response) {
 
   const existing = await prisma.atendimento.findUnique({ where: { id } });
   if (!existing) {
-    return res.status(404).json({ message: 'Appointment not found' });
+    return res.status(404).json({ message: 'Atendimento não encontrado' });
   }
 
   const parseResult = updateStatusSchema.safeParse(req.body);
 
   if (!parseResult.success) {
-    return res.status(400).json({ message: 'Invalid status payload', issues: parseResult.error.issues });
+    return res.status(400).json({ message: 'Payload inválido do status', issues: parseResult.error.issues });
   }
 
   const { status } = parseResult.data;
@@ -179,7 +199,7 @@ export async function updateAppointmentStatus(req: Request, res: Response) {
 
   if (!next || next !== status) {
     return res.status(400).json({
-      message: `Invalid status transition from ${existing.status} to ${status}`
+      message: `Transição de status inválida de ${existing.status} para ${status}`
     });
   }
 
@@ -193,11 +213,15 @@ export async function updateAppointmentStatus(req: Request, res: Response) {
     data.finishedAt = new Date();
   }
 
-  const updated = await prisma.atendimento.update({
-    where: { id },
-    data
-  });
+  try {
+    const updated = await prisma.atendimento.update({
+      where: { id },
+      data
+    });
 
-  return res.status(200).json(updated);
+    return res.status(200).json(updated);
+  } catch (err) {
+    return res.status(500).json({ message: 'Erro inesperado ao atualizar o status do atendimento' });
+  }
 }
 

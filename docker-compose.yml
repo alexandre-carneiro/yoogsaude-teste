@@ -26,6 +26,18 @@ services:
       - db
     restart: unless-stopped
 
+  frontend:
+    build:
+      context: ./frontend
+    container_name: yoog-frontend
+    ports:
+      - '3000:3000'
+    environment:
+      REACT_APP_API_URL: http://yoog-backend:3333/api
+    depends_on:
+      - backend
+    restart: unless-stopped
+
 volumes:
   postgres_data:
 

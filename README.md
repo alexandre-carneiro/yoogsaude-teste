@@ -14,7 +14,7 @@ Isso sobe:
 
 - Serviço `db` (PostgreSQL).
 - Serviço `backend` (API em Node.js).
-- Futuramente será adicionado o serviço do frontend.
+- Serviço `frontend` (aplicação React).
 
 Após tudo subir, o backend ficará acessível em:
 
@@ -26,6 +26,12 @@ Healthcheck:
 
 ```text
 GET http://localhost:3333/api/health
+```
+
+O frontend ficará acessível em:
+
+```text
+http://localhost:3000
 ```
 
 ---
@@ -53,7 +59,7 @@ docker compose exec backend npm test
 ### Estrutura do projeto
 
 - `backend/` – API em Node.js/TypeScript (Express + Prisma + Jest).
-- `frontend/` – será implementado posteriormente (React).
+- `frontend/` – frontend em React (Vite + MUI + styled-components).
 
 ---
 
