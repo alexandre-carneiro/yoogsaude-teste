@@ -4,10 +4,10 @@ Aplicação React criada com **Create React App (TypeScript)**, utilizando **MUI
 
 ### Stack
 
-- React 18 + TypeScript
-- Vite
+- React 18 + TypeScript (Create React App)
 - MUI (`@mui/material`, `@mui/icons-material`)
 - styled-components
+ - Axios + React Router DOM
 
 ### Organização de pastas (Atomic Design)
 
@@ -20,6 +20,23 @@ Aplicação React criada com **Create React App (TypeScript)**, utilizando **MUI
 - `src/hooks` – hooks customizados (ex.: hooks para buscar pacientes/atendimentos).
 - `src/services/api.ts` – client HTTP (`axios`) configurado para falar com o backend.
 - `src/styles/theme` – temas do MUI (`muiTheme`) e tema global para styled-components (`globalTheme`).
+
+### Páginas implementadas
+
+- `/` – **Home**  
+  Hub inicial com dois cartões de ação: gerenciamento de pacientes e gerenciamento de atendimentos.
+
+- `/patients` – **Pacientes**  
+  - Listagem de pacientes.  
+  - Criação/edição com validação de dados (Zod) e feedback visual de erro, incluindo caso de email já em uso.  
+  - Campo de notas com limite de caracteres e contador, truncado na listagem.  
+  - Diálogos de confirmação para exclusão e atualização.
+
+- `/appointments` – **Atendimentos**  
+  - Criação de atendimentos vinculados a um paciente.  
+  - Listagem paginada do backend (com filtros de status/paciente expostos pela API, prontos para evolução).  
+  - Atualização de dados do atendimento e transição de status (`Aguardando → Em atendimento → Finalizado`) com botões específicos.  
+  - Feedback de sucesso/erro via `Alert` flutuante.
 
 ### Execução via Docker Compose (recomendado)
 

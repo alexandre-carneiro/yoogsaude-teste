@@ -63,11 +63,14 @@ Todos os endpoints do backend estão sob o prefixo `/api`.
 - **DELETE** `/api/patients/:id`  
   - Remove o paciente **apenas se não houver atendimentos vinculados**.  
   - Respostas:
-    - `400` – se houver atendimentos: `{ "message": "Cannot delete patient with existing appointments" }`.
+    - `400` – se houver atendimentos:  
+      ```json
+      { "message": "Não é possível excluir o paciente com atendimentos existentes" }
+      ```
     - `404` – paciente inexistente.
     - `200` – paciente removido:
       ```json
-      { "message": "Patient deleted successfully" }
+      { "message": "Paciente excluído com sucesso" }
       ```
 
 #### Appointments (`/api/appointments`)
@@ -119,7 +122,7 @@ Todos os endpoints do backend estão sob o prefixo `/api`.
     - `404` – se não existir.
     - `200` – se excluído:
       ```json
-      { "message": "Appointment deleted successfully" }
+      { "message": "Atendimento excluído com sucesso" }
       ```
 
 - **PATCH** `/api/appointments/:id/status`  
@@ -139,7 +142,7 @@ Todos os endpoints do backend estão sob o prefixo `/api`.
     - Ao mudar para `FINALIZADO`, preenche `finishedAt` se ainda não estiver definido.
   - Transições inválidas retornam `400` com mensagem:
     ```json
-    { "message": "Invalid status transition from AGUARDANDO to FINALIZADO" }
+    { "message": "Transição de status inválida de AGUARDANDO para FINALIZADO" }
     ```
 
 ---

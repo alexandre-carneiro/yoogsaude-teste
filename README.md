@@ -59,7 +59,7 @@ docker compose exec backend npm test
 ### Estrutura do projeto
 
 - `backend/` – API em Node.js/TypeScript (Express + Prisma + Jest).
-- `frontend/` – frontend em React (Vite + MUI + styled-components).
+- `frontend/` – frontend em React (Create React App + MUI + styled-components).
 
 ---
 
