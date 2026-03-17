@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: yoog-backend
+    ports:
+      - '3333:3333'
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+
